@@ -1,8 +1,9 @@
-import os.path
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 try:
     from setuptools import setup
-except ImportError:
+except:
     from distutils.core import setup
 
 long_description = ""
@@ -11,11 +12,11 @@ with open('README.rst') as f:
 
 setup(
     name='ImageHash',
-    version=open(os.path.join('imagehash', 'VERSION')).read().strip(),
+    version='4.0',
     author='Johannes Buchner',
     author_email='buchner.johannes@gmx.at',
-    packages=['imagehash', 'imagehash.tests'],
-    package_data={'imagehash': [os.path.join('tests', 'data', '*'), 'VERSION']},
+    py_modules=['imagehash'],
+    data_files=[('images', ['tests/data/imagehash.png'])],
     scripts=['find_similar_images.py'],
     url='https://github.com/JohannesBuchner/imagehash',
     license='BSD 2-clause (see LICENSE file)',
@@ -28,5 +29,6 @@ setup(
         "pillow",      # or PIL
         "PyWavelets",  # for whash
     ],
-    test_suite='imagehash.tests'
+    test_suite='tests',
+    tests_require=['pytest>=3'],
 )

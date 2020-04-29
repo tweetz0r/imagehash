@@ -1,13 +1,12 @@
 from __future__ import (absolute_import, division, print_function)
 
-from PIL import Image
 import unittest
 
 import imagehash
-import imagehash.tests as tests
+from .utils import TestImageHash
 
 
-class Test(tests.TestImageHash):
+class Test(TestImageHash):
     def setUp(self):
         self.image = self.get_data_image()
         self.func = imagehash.phash

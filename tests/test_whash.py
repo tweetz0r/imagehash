@@ -5,10 +5,10 @@ import six
 import unittest
 
 import imagehash
-import imagehash.tests as tests
+from .utils import TestImageHash
 
 
-class TestBasic(tests.TestImageHash):
+class TestBasic(TestImageHash):
 
     def setUp(self):
         self.image = self.get_data_image()

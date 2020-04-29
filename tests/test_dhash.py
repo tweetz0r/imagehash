@@ -4,27 +4,25 @@ from PIL import Image
 import unittest
 
 import imagehash
-import imagehash.tests as tests
+from .utils import TestImageHash
 
 
-class Test(tests.TestImageHash):
+class Test(TestImageHash):
     def setUp(self):
         self.image = self.get_data_image()
-        self.func = imagehash.average_hash
+        self.func = imagehash.dhash
 
-    def test_average_hash(self):
+    def test_dhash(self):
         self.check_hash_algorithm(self.func, self.image)
 
-    def test_average_hash_length(self):
+    def test_dhash_length(self):
         self.check_hash_length(self.func, self.image)
 
-    def test_average_hash_stored(self):
+    def test_dhash_stored(self):
         self.check_hash_stored(self.func, self.image)
 
-    def test_average_hash_size(self):
+    def test_dhash_size(self):
         self.check_hash_size(self.func, self.image)
-
-
 
 if __name__ == '__main__':
     unittest.main()
