@@ -169,7 +169,7 @@ def average_hash(image, hash_size=8, mean=numpy.mean):
 
 	Implementation follows http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
 
-	Step by step explanation: https://www.safaribooksonline.com/blog/2013/11/26/image-hashing-with-python/
+	Step by step explanation: https://web.archive.org/web/20171112054354/https://www.safaribooksonline.com/blog/2013/11/26/image-hashing-with-python/
 
 	@image must be a PIL instance.
 	@mean how to determine the average luminescence. can try numpy.median instead.
