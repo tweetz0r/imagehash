@@ -9,11 +9,11 @@ import imagehash
 Demo of hashing
 """
 def find_similar_images(userpaths, hashfunc = imagehash.average_hash):
-    import os
     def is_image(filename):
         f = filename.lower()
         return f.endswith(".png") or f.endswith(".jpg") or \
-            f.endswith(".jpeg") or f.endswith(".bmp") or f.endswith(".gif") or '.jpg' in f
+            f.endswith(".jpeg") or f.endswith(".bmp") or \
+            f.endswith(".gif") or '.jpg' in f or  f.endswith(".svg")
     
     image_filenames = []
     for userpath in userpaths:
@@ -24,6 +24,7 @@ def find_similar_images(userpaths, hashfunc = imagehash.average_hash):
             hash = hashfunc(Image.open(img))
         except Exception as e:
             print('Problem:', e, 'with', img)
+            continue
         if hash in images:
             print(img, '  already exists as', ' '.join(images[hash]))
             if 'dupPictures' in img:
