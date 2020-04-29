@@ -70,7 +70,7 @@ For understanding hash distances, check out these excellent blog posts:
 * https://content-blockchain.org/research/testing-different-image-hash-functions/
 
 The first dataset is a **collection of 7441 free icons on github** (see examples/github-urls.txt).
-The pages show groups of images with the same hash (the hashing method sees them as the same).
+The following pages show groups of images with the same hash (the hashing method sees them as the same).
 
 * `phash hashsize=8 clusters <https://johannesbuchner.github.io/imagehash/art3.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/art9.html>`_)
 * `dhash hashsize=8 clusters <https://johannesbuchner.github.io/imagehash/art4.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/art10.html>`_)
@@ -79,15 +79,16 @@ The pages show groups of images with the same hash (the hashing method sees them
 * `colorhash binbits=3 clusters <https://johannesbuchner.github.io/imagehash/art7.html>`_
 * `average_hash hashsize=8 clusters <https://johannesbuchner.github.io/imagehash/art2.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/art8.html>`_)
 
-The first dataset is a **collection of 109259 art pieces** from parismuseescollections.paris.fr/en/recherche/image-libre/.
-The pages show groups of images with the same hash (the hashing method sees them as the same).
+The second dataset is a **collection of 109259 art pieces** from parismuseescollections.paris.fr/en/recherche/image-libre/.
+
+The following pages show groups of images with the same hash (the hashing method sees them as the same).
 
 * `phash hashsize:8 clusters <https://johannesbuchner.github.io/imagehash/index3.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/index9.html>`_)
 * `dhash hashsize:8 clusters <https://johannesbuchner.github.io/imagehash/index4.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/index10.html>`_)
 * `whash-haar hashsize:8 clusters <https://johannesbuchner.github.io/imagehash/index5.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/index11.html>`_)
 * `whash-db4 hashsize:8 clusters <https://johannesbuchner.github.io/imagehash/index6.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/index12.html>`_)
 * `colorhash binbits:3 clusters <https://johannesbuchner.github.io/imagehash/index7.html>`_
-* `average_hash hashsize:8 clusters <https://johannesbuchner.github.io/imagehash/index2.html>`_ (`with z-transform<https://johannesbuchner.github.io/imagehash/index8.html>`_)
+* `average_hash hashsize:8 clusters <https://johannesbuchner.github.io/imagehash/index2.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/index8.html>`_)
 
 You may want to adjust the hashsize or require some manhattan distance (hash1 - hash2 < threshold).
 
@@ -96,12 +97,14 @@ Other projects
 
 * http://blockhash.io/
 * https://github.com/acoomans/instagram-filters
+* https://pippy360.github.io/transformationInvariantImageSearch/
 
 Contributing
 -------------
 
 Pull requests and new features are welcome.
 
+If you encounter a bug or have a question, please open a Github issue. You can also try stackoverflow.
 
 Changelog
 ----------
