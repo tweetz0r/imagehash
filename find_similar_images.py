@@ -49,6 +49,7 @@ Method:
   dhash:      Difference hash
   whash-haar: Haar wavelet hash
   whash-db4:  Daubechies wavelet hash
+  colorhash:  HSV color hash
 
 (C) Johannes Buchner, 2013-2017
 """ % sys.argv[0])
@@ -65,6 +66,8 @@ Method:
         hashfunc = imagehash.whash
     elif hashmethod == 'whash-db4':
         hashfunc = lambda img: imagehash.whash(img, mode='db4')
+    elif hashmethod == 'colorhash':
+        hashfunc = imagehash.colorhash
     else:
         usage()
     userpaths = sys.argv[2:] if len(sys.argv) > 2 else "."
