@@ -51,7 +51,7 @@ script:
   - cp tests/data/imagehash{,2}.png
   - for hash in ahash phash dhash whash-haar whash-db4 colorhash; do 
        echo ${hash};
-       coverage run find_similar_images.py ${hash} tests/data/ || exit 1;
+       coverage run -a find_similar_images.py ${hash} tests/data/ || exit 1;
     done
 
 after_success: coveralls
