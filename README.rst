@@ -1,13 +1,13 @@
 ImageHash
 ===========
 
-A image hashing library written in Python. ImageHash supports:
+An image hashing library written in Python. ImageHash supports:
 
-* average hashing (`aHash`_)
-* perception hashing (`pHash`_)
-* difference hashing (`dHash`_)
-* wavelet hashing (`wHash`_)
-* HSV color hash (colorhash)
+* Average hashing (`aHash`_)
+* Perceptual hashing (`pHash`_)
+* Difference hashing (`dHash`_)
+* Wavelet hashing (`wHash`_)
+* HSV color hashing (colorhash)
 
 |Travis|_ |Coveralls|_
 
@@ -15,12 +15,13 @@ Rationale
 ---------
 
 Image hashes tell whether two images look nearly identical.
-This is different from cryptographic hashing algorithms (like md5, sha-1)
+This is different from cryptographic hashing algorithms (like MD5, SHA-1)
 where tiny changes in the image give completely different hashes. 
-In image fingerprinting, we actually want our similar inputs to have similar output hashes as well.
+In image fingerprinting, we actually want our similar inputs to have
+similar output hashes as well.
 
-The image hash algorithms (average, perception, difference, wavelet)
-analyse the image structure on luminence (without color information).
+The image hash algorithms (average, perceptual, difference, wavelet)
+analyse the image structure on luminance (without color information).
 The color hash algorithm analyses the color distribution and 
 black & gray fractions (without position information).
 
@@ -48,9 +49,15 @@ Basic usage
 	>>> print(hash - otherhash)
 	36
 
-The demo script **find_similar_images** illustrates how to find similar images in a directory.
+Each algorithm can also have its hash size adjusted (or in the case of
+colorhash, its :code:`binbits`). Increasing the hash size allows an
+algorithm to store more detail in its hash, increasing its sensitivity
+to changes in detail.
 
-Source hosted at github: https://github.com/JohannesBuchner/imagehash
+The demo script **find_similar_images** illustrates how to find similar
+images in a directory.
+
+Source hosted at GitHub: https://github.com/JohannesBuchner/imagehash
 
 .. _aHash: http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
 .. _pHash: http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
@@ -69,7 +76,7 @@ For understanding hash distances, check out these excellent blog posts:
 * https://tech.okcupid.com/evaluating-perceptual-image-hashes-okcupid/
 * https://content-blockchain.org/research/testing-different-image-hash-functions/
 
-The first dataset is a **collection of 7441 free icons on github** (see examples/github-urls.txt).
+The first dataset is a **collection of 7441 free icons on GitHub** (see examples/github-urls.txt).
 The following pages show groups of images with the same hash (the hashing method sees them as the same).
 
 * `phash hashsize=8 clusters <https://johannesbuchner.github.io/imagehash/art3.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/art9.html>`__)
@@ -104,25 +111,25 @@ Contributing
 
 Pull requests and new features are welcome.
 
-If you encounter a bug or have a question, please open a Github issue. You can also try stackoverflow.
+If you encounter a bug or have a question, please open a GitHub issue. You can also try Stack Overflow.
 
 Changelog
 ----------
 
-* 4.1: add examples and colorhash
+* 4.1: Add examples and colorhash
 
 * 4.0: Changed binary to hex implementation, because the previous one was broken for various hash sizes. This change breaks compatibility to previously stored hashes; to convert them from the old encoding, use the "old_hex_to_hash" function.
 
-* 3.5: image data handling speed-up
+* 3.5: Image data handling speed-up
 
 * 3.2: whash now also handles smaller-than-hash images
 
 * 3.0: dhash had a bug: It computed pixel differences vertically, not horizontally.
        I modified it to follow `dHash`_. The old function is available as dhash_vertical.
 
-* 2.0: added whash
+* 2.0: Added whash
 
-* 1.0: initial ahash, dhash, phash implementations.
+* 1.0: Initial ahash, dhash, phash implementations.
 
 
 .. |Travis| image:: https://travis-ci.org/JohannesBuchner/imagehash.svg?branch=master
