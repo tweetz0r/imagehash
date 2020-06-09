@@ -4,10 +4,9 @@
 
 [run]
 branch = True
-omit =
-    imagehash/tests/*
-    imagehash/data/*
-    setup.py
+include = 
+        imagehash.py
+        find_similar_images.py
 
 
 [report]
