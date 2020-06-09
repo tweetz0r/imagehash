@@ -11,7 +11,7 @@ git:
   depth: 10000
 
 install:
-  - apt-get install -y imagemagick
+  - sudo apt-get install -y imagemagick
   # Fetch and install conda
   # -----------------------
   - export CONDA_BASE="http://repo.continuum.io/miniconda/Miniconda"
