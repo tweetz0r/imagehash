@@ -11,6 +11,7 @@ git:
   depth: 10000
 
 install:
+  - apt-get install -y imagemagick
   # Fetch and install conda
   # -----------------------
   - export CONDA_BASE="http://repo.continuum.io/miniconda/Miniconda"
@@ -53,5 +54,9 @@ script:
        echo ${hash};
        coverage run -a find_similar_images.py ${hash} tests/data/ || exit 1;
     done
+  - cp tests/data/imagehash.png test.png
+  - convert test.png other.bmp
+  - grep '>>>' README.rst | sed 's,[\t ]*>>> ,,g' > readme.py
+  - coverage run -a readme.py
 
 after_success: coveralls
