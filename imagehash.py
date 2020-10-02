@@ -372,3 +372,44 @@ def colorhash(image, binbits=3):
 		bitarray += [v // (2**(binbits-i-1)) % 2**(binbits-i) > 0 for i in range(binbits)]
 	return ImageHash(numpy.asarray(bitarray).reshape((-1, binbits)))
 
+
+class CropResistantHash(object):
+	def __init__(self):
+		pass
+
+	def __eq__(self, other):
+		if other is None:
+			return False
+		return self.matches(other)
+
+	def matches(self, other_hash, hamming_cutoff=0, region_cutoff=1):
+		"""
+		Checks whether this hash matches another crop resistant hash, `other_hash`.
+		:param other_hash: The crop resistant hash to compare against
+		:param hamming_cutoff: The maximum hamming distance to a region hash in the target hash
+		:param region_cutoff: The minimum number of regions which must have a matching hash
+		"""
+		pass
+
+
+def watershedHash(image):
+	# Identify image segments limited by a size threshold, so only large segments are processed
+	# Create bounding box for each segment
+	# Compute robust hash for each bounding box
+	# Store each robust hash together with an image identifier in the hash database
+	pass
+
+
+def watershedHashAndMatch(image, hashes):
+	"""
+	I do not want this to be part of the end result, just storing the algorithm here.
+	It wants to go in CropResistantHash.matches()
+	"""
+	# Identify image segments limited by a size threshold
+	# - Create bounding box for each segment
+	# - Compute robust hash for each bounding box
+	# - Find hash with lowest hamming distance in segment hash database
+	# - Store image identifier from database together with hamming distance in a list
+	# If hamming distance is above a defined threshold, discard hash and list entry
+	# Find image by majority vote of list entries. This identifier points to the detected image. In case of a draw, the image with the lower overall hamming distance wins.
+	pass
