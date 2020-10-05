@@ -115,6 +115,10 @@ class ImageHash(object):
 		# this returns a 8 bit integer, intentionally shortening the information
 		return sum([2**(i % 8) for i, v in enumerate(self.hash.flatten()) if v])
 
+	def __len__(self):
+		# Returns the bit length of the hash
+		return self.hash.size
+
 
 def hex_to_hash(hexstr):
 	"""
@@ -375,28 +379,65 @@ def colorhash(image, binbits=3):
 
 class CropResistantHash(object):
 	def __init__(self, hashes):
-		self.hashes = hashes
+		self.region_hashes = hashes
 
 	def __eq__(self, other):
 		if other is None:
 			return False
 		return self.matches(other)
 
-	def matches(self, other_hash, hamming_cutoff=0, region_cutoff=1):
+	def matches(self, other_hash, region_cutoff=1, hamming_cutoff=None, bit_error_rate=None):
 		"""
 		Checks whether this hash matches another crop resistant hash, `other_hash`.
 		:param other_hash: The crop resistant hash to compare against
-		:param hamming_cutoff: The maximum hamming distance to a region hash in the target hash
 		:param region_cutoff: The minimum number of regions which must have a matching hash
+		:param hamming_cutoff: The maximum hamming distance to a region hash in the target hash
+		:param bit_error_rate: Percentage of bits which can be incorrect, an alternative to the hamming cutoff
 		"""
-		matches = 0
-		for region in self.hashes:
-			if any(
-				region - other_region <= hamming_cutoff
-				for other_region in other_hash.hashes
-			):
-				matches += 1
+		if hamming_cutoff is None and bit_error_rate is None:
+			bit_error_rate = 0.25
+		if hamming_cutoff is None:
+			hamming_cutoff = len(self.region_hashes[0]) * bit_error_rate
+		matches = sum(
+			region_hash - other_region_hashes <= hamming_cutoff
+			for other_region_hashes in other_hash.region_hashes
+			for region_hash in self.region_hashes
+		)
 		return matches >= region_cutoff
+
+	def best_match(self, other_hashes, hamming_cutoff=None, bit_error_rate=None):
+		"""
+		Orders the given hashes by which is the best match to the current hash
+		:param other_hashes: A list of crop-resistant hashes to compare against
+		:param hamming_cutoff: The maximum hamming distance to a region hash in the target hash
+		:param bit_error_rate: Percentage of bits which can be incorrect, an alternative to the hamming cutoff
+		"""
+		# Return whichever has most matching regions, if a tie, whichever has lower overall hamming distance
+		if hamming_cutoff is None and bit_error_rate is None:
+			bit_error_rate = 0.25
+		if hamming_cutoff is None:
+			hamming_cutoff = len(self.region_hashes[0]) * bit_error_rate
+		results = []
+		for other_hash in other_hashes:
+			hamming_distances = [
+				region_hash - other_region_hash
+				for other_region_hash in other_hash.hashes
+				for region_hash in self.region_hashes
+			]
+			region_matches = sum(
+				distance <= hamming_cutoff
+				for distance in hamming_distances
+			)
+			total_hamming = sum(hamming_distances)
+			results.append({
+				"hash": other_hash,
+				"region_matches": region_matches,
+				"total_hamming": total_hamming
+			})
+		return [
+			x["hash"] for x
+			in sorted(results, key=lambda k: (-k["region_matches"], k["total_hamming"]))
+		]
 
 
 def watershedHash(image):
