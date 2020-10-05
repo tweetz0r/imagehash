@@ -398,11 +398,13 @@ class CropResistantHash(object):
 			bit_error_rate = 0.25
 		if hamming_cutoff is None:
 			hamming_cutoff = len(self.region_hashes[0]) * bit_error_rate
-		matches = sum(
-			region_hash - other_region_hashes <= hamming_cutoff
-			for other_region_hashes in other_hash.region_hashes
-			for region_hash in self.region_hashes
-		)
+		matches = 0
+		for region_hash in self.region_hashes:
+			if any(
+				region_hash - other_region_hashes <= hamming_cutoff
+				for other_region_hashes in other_hash.region_hashes
+			):
+				matches += 1
 		return matches >= region_cutoff
 
 	def best_match(self, other_hashes, hamming_cutoff=None, bit_error_rate=None):
