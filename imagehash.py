@@ -379,7 +379,7 @@ def colorhash(image, binbits=3):
 
 class CropResistantHash(object):
 	def __init__(self, hashes):
-		self.region_hashes = hashes
+		self.segment_hashes = hashes
 
 	def __eq__(self, other):
 		if other is None:
@@ -397,19 +397,19 @@ class CropResistantHash(object):
 		if hamming_cutoff is None and bit_error_rate is None:
 			bit_error_rate = 0.25
 		if hamming_cutoff is None:
-			hamming_cutoff = len(self.region_hashes[0]) * bit_error_rate
+			hamming_cutoff = len(self.segment_hashes[0]) * bit_error_rate
 		matches = 0
-		for region_hash in self.region_hashes:
+		for segment_hash in self.segment_hashes:
 			if any(
-				region_hash - other_region_hashes <= hamming_cutoff
-				for other_region_hashes in other_hash.region_hashes
+				segment_hash - other_segment_hashes <= hamming_cutoff
+				for other_segment_hashes in other_hash.segment_hashes
 			):
 				matches += 1
 		return matches >= region_cutoff
 
 	def best_match(self, other_hashes, hamming_cutoff=None, bit_error_rate=None):
 		"""
-		Orders the given hashes by which is the best match to the current hash
+		Returns the hash in a list which is the best match to the current hash
 		:param other_hashes: A list of crop-resistant hashes to compare against
 		:param hamming_cutoff: The maximum hamming distance to a region hash in the target hash
 		:param bit_error_rate: Percentage of bits which can be incorrect, an alternative to the hamming cutoff
@@ -418,28 +418,38 @@ class CropResistantHash(object):
 		if hamming_cutoff is None and bit_error_rate is None:
 			bit_error_rate = 0.25
 		if hamming_cutoff is None:
-			hamming_cutoff = len(self.region_hashes[0]) * bit_error_rate
-		results = []
-		for other_hash in other_hashes:
-			hamming_distances = [
-				region_hash - other_region_hash
-				for other_region_hash in other_hash.hashes
-				for region_hash in self.region_hashes
-			]
-			region_matches = sum(
-				distance <= hamming_cutoff
-				for distance in hamming_distances
+			hamming_cutoff = len(self.segment_hashes[0]) * bit_error_rate
+		# Get the closest hash for each region hash
+		votes = [[]] * len(other_hashes)
+		for region_hash in self.segment_hashes:
+			if min(
+					region_hash - other_region_hash
+					for other_hash in other_hashes
+					for other_region_hash in other_hash.region_hashes
+			) > hamming_cutoff:
+				# Discard any where hamming distance is above threshold
+				continue
+			lowest_hash = min(
+				range(len(other_hashes)),
+				key=lambda x: min(
+					other_hashes[x].region_hashes, key=lambda other_region_hash: region_hash-other_region_hash
+				)
 			)
-			total_hamming = sum(hamming_distances)
-			results.append({
-				"hash": other_hash,
-				"region_matches": region_matches,
-				"total_hamming": total_hamming
-			})
-		return [
-			x["hash"] for x
-			in sorted(results, key=lambda k: (-k["region_matches"], k["total_hamming"]))
-		]
+			votes[lowest_hash].append(region_hash)
+		# Select hash by majority vote of list
+		max_votes = max(votes, key=len)
+		if max_votes is None:
+			return None
+		winner_idxs = [i for i, j in enumerate(votes) if len(j) == len(max_votes)]
+		# In the case of a draw, pick the image with the lower overall hamming distance
+		return other_hashes[min(
+			winner_idxs,
+			key=lambda other_hash_idx: sum(
+				other_region_hash - region_hash
+				for region_hash in max_votes[other_hash_idx]
+				for other_region_hash in other_hashes[other_hash_idx]
+			)
+		)]
 
 
 def watershedHash(image):
