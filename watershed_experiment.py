@@ -129,5 +129,5 @@ if __name__ == "__main__":
     print(result)
     print(result2)
     print(result == result2)
-    print(result.matches(result2, 10))
+    print(result.matches(result2, hamming_cutoff=10))
     print("Done")

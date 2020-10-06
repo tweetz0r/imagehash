@@ -386,7 +386,7 @@ class CropResistantHash(object):
 			return False
 		return self.matches(other)
 
-	def matches(self, other_hash, region_cutoff=1, hamming_cutoff=None, bit_error_rate=None):
+	def matches(self, other_hash, *, region_cutoff=1, hamming_cutoff=None, bit_error_rate=None):
 		"""
 		Checks whether this hash matches another crop resistant hash, `other_hash`.
 		:param other_hash: The crop resistant hash to compare against
@@ -407,7 +407,7 @@ class CropResistantHash(object):
 				matches += 1
 		return matches >= region_cutoff
 
-	def best_match(self, other_hashes, hamming_cutoff=None, bit_error_rate=None):
+	def best_match(self, other_hashes, *, hamming_cutoff=None, bit_error_rate=None):
 		"""
 		Returns the hash in a list which is the best match to the current hash
 		:param other_hashes: A list of crop-resistant hashes to compare against
