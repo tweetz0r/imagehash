@@ -61,7 +61,7 @@ def watershed_hash(image):
     segment_threshold = 128
     min_segment_size = 100
     hash_func = imagehash.dhash
-    limit_regions = None  # If you have memory requirements, you can limit to the M largest segments
+    limit_segments = None  # If you have memory requirements, you can limit to the M largest segments
 
     orig_image = image.copy()
     # Convert to gray scale and resize
@@ -94,6 +94,10 @@ def watershed_hash(image):
     if not segments:
         full_image_segment = {(0, 0), (segmentation_img_size, segmentation_img_size)}
         segments.append(full_image_segment)
+
+    # If segment limit is set, discard the smaller segments
+    if limit_segments:
+        segments = set(sorted(segments, key=lambda s: len(s), reverse=True)[:limit_segments])
 
     # Create bounding box for each segment
     hashes = []
