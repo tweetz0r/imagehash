@@ -102,19 +102,19 @@ def watershed_hash(image):
     # Create bounding box for each segment
     hashes = []
     for segment in segments:
-        # orig_w, orig_h = orig_image.size
-        scale_w = 1  # orig_w / segmentation_img_size
-        scale_h = 1  # orig_h / segmentation_img_size
+        orig_w, orig_h = orig_image.size
+        scale_w = orig_w / segmentation_img_size
+        scale_h = orig_h / segmentation_img_size
         min_y = min(coord[0] for coord in segment) * scale_h
         min_x = min(coord[1] for coord in segment) * scale_w
         max_y = (max(coord[0] for coord in segment)+1) * scale_h
         max_x = (max(coord[1] for coord in segment)+1) * scale_w
         # Compute robust hash for each bounding box
-        bounding_box = image.crop((min_x, min_y, max_x, max_y))
+        bounding_box = orig_image.crop((min_x, min_y, max_x, max_y))
         hashes.append(hash_func(bounding_box))
         # Show bounding box
-        #show_segments(image, segment)
-        #bounding_box.show()
+        # show_segments(image, segment)
+        # bounding_box.show()
 
     return imagehash.CropResistantHash(hashes)
 
