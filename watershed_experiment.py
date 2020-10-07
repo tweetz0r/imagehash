@@ -140,4 +140,5 @@ if __name__ == "__main__":
     print(result2)
     print(result == result2)
     print(result.matches(result2, hamming_cutoff=10))
+    print(result.matches(result2, bit_error_rate=0.25))
     print("Done")
