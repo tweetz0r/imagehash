@@ -490,19 +490,37 @@ def _find_region(remaining_pixels, segmented_pixels):
 	return in_region
 
 
-def segmented_hash(image):
+def segmented_hash(
+		image,
+		hash_func=None,
+		limit_segments=None,
+		segment_threshold=128,
+		min_segment_size=100,
+		segmentation_image_size=300
+	):
+	"""
+	Creates a CropResistantHash object, by the algorithm described in the paper "Efficient Cropping-Resistant Robust
+	Image Hashing". DOI 10.1109/ARES.2014.85
+	This algorithm partitions the image into bright and dark segments, using a watershed-like algorithm, and then does
+	an image hash on each segment. This makes the image much more resistant to cropping than other algorithms, with
+	the paper claiming resistance to up to 50% cropping, while most other algorithms stop at about 5% cropping.
+	:param image: The image to hash
+	:param hash_func: The hashing function to use
+	:param limit_segments: If you have storage requirements, you can limit to hashing only the M largest segments
+	:param segment_threshold: Brightness threshold between hills and valleys. This should be static, putting it between
+	peak and trough dynamically breaks the matching
+	:param min_segment_size: Minimum number of pixels for a hashable segment
+	:param segmentation_image_size: Size which the image is resized to before segmentation
+	"""
 	# Define some tunable params
-	segmentation_img_size = 300
 	gaussian_blur = 2
 	median_filter = 3
-	segment_threshold = 128  # This wants to be static. Setting it as the median between peak and trough does not work
-	min_segment_size = 100
-	hash_func = dhash
-	limit_segments = None  # If you have memory requirements, you can limit to the M largest segments
+	if hash_func is None:
+		hash_func = dhash
 
 	orig_image = image.copy()
 	# Convert to gray scale and resize
-	image = image.convert("L").resize((segmentation_img_size, segmentation_img_size), Image.ANTIALIAS)
+	image = image.convert("L").resize((segmentation_image_size, segmentation_image_size), Image.ANTIALIAS)
 	# Add filters
 	image = image.filter(ImageFilter.GaussianBlur(gaussian_blur)).filter(ImageFilter.MedianFilter(median_filter))
 	pixels = numpy.array(image).astype(numpy.float32)
@@ -515,10 +533,10 @@ def segmented_hash(image):
 	already_segmented = set()
 
 	# Add all the pixels around the border outside the image:
-	already_segmented.update([(-1, z) for z in range(segmentation_img_size)])
-	already_segmented.update([(z, -1) for z in range(segmentation_img_size)])
-	already_segmented.update([(segmentation_img_size, z) for z in range(segmentation_img_size)])
-	already_segmented.update([(z, segmentation_img_size) for z in range(segmentation_img_size)])
+	already_segmented.update([(-1, z) for z in range(segmentation_image_size)])
+	already_segmented.update([(z, -1) for z in range(segmentation_image_size)])
+	already_segmented.update([(segmentation_image_size, z) for z in range(segmentation_image_size)])
+	already_segmented.update([(z, segmentation_image_size) for z in range(segmentation_image_size)])
 
 	# Find all the "hill" regions
 	while numpy.bitwise_and(threshold_pixels, unassigned_pixels).any():
@@ -532,7 +550,7 @@ def segmented_hash(image):
 
 	# Invert the threshold matrix, and find "valleys"
 	threshold_pixels_i = numpy.invert(threshold_pixels)
-	while len(already_segmented) < segmentation_img_size * segmentation_img_size:
+	while len(already_segmented) < segmentation_image_size * segmentation_image_size:
 		remaining_pixels = numpy.bitwise_and(threshold_pixels_i, unassigned_pixels)
 		segment = _find_region(remaining_pixels, already_segmented)
 		# Apply segment
@@ -543,7 +561,7 @@ def segmented_hash(image):
 
 	# If there are no segments, have 1 segment including the whole image
 	if not segments:
-		full_image_segment = {(0, 0), (segmentation_img_size, segmentation_img_size)}
+		full_image_segment = {(0, 0), (segmentation_image_size-1, segmentation_image_size-1)}
 		segments.append(full_image_segment)
 
 	# If segment limit is set, discard the smaller segments
@@ -554,8 +572,8 @@ def segmented_hash(image):
 	hashes = []
 	for segment in segments:
 		orig_w, orig_h = orig_image.size
-		scale_w = orig_w / segmentation_img_size
-		scale_h = orig_h / segmentation_img_size
+		scale_w = orig_w / segmentation_image_size
+		scale_h = orig_h / segmentation_image_size
 		min_y = min(coord[0] for coord in segment) * scale_h
 		min_x = min(coord[1] for coord in segment) * scale_w
 		max_y = (max(coord[0] for coord in segment)+1) * scale_h
