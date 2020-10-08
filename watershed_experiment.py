@@ -6,48 +6,39 @@ from PIL import Image, ImageFilter
 import imagehash
 
 
-def find_region(pixels, segmented_pixels, segment_threshold, segmentation_img_size, from_highest=True):
+def find_region(remaining_pixels, segmented_pixels):
     in_region = set()
     not_in_region = set()
-    highest = numpy.unravel_index(numpy.nanargmax(pixels, axis=None), pixels.shape)
-    lowest = numpy.unravel_index(numpy.nanargmin(pixels, axis=None), pixels.shape)
-    peak = pixels[highest]
-    trough = pixels[lowest]
-    if from_highest:
-        in_region.add(highest)
-    else:
-        in_region.add(lowest)
+    # Find the first pixel in remaining_pixels with a value of True
+    available_pixels = numpy.transpose(numpy.nonzero(remaining_pixels))
+    start = tuple(available_pixels[0])
+    in_region.add(start)
     new_pixels = in_region.copy()
     while True:
         try_next = set()
         # Find surrounding pixels
         for pixel in new_pixels:
             x, y = pixel
-            new_pixels = []
-            if x > 0:
-                new_pixels.append((x - 1, y))
-            if x < segmentation_img_size - 1:
-                new_pixels.append((x + 1, y))
-            if y > 0:
-                new_pixels.append((x, y - 1))
-            if y < segmentation_img_size - 1:
-                new_pixels.append((x, y + 1))
-            try_next.update(new_pixels)
-        try_next -= in_region
-        try_next -= not_in_region
-        try_next -= segmented_pixels
+            neighbours = [
+                (x-1, y),
+                (x+1, y),
+                (x, y-1),
+                (x, y+1)
+            ]
+            try_next.update(neighbours)
+        # Remove pixels we have already seen
+        try_next.difference_update(segmented_pixels, not_in_region)
+        # If there's no more pixels to try, the region is complete
         if not try_next:
             break
-        # Check those
-        if from_highest:
-            upper, lower = peak, segment_threshold
-        else:
-            upper, lower = segment_threshold, trough
+        # Empty new pixels set, so we know whose neighbour's to check next time
         new_pixels = set()
+        # Check new pixels
         for pixel in try_next:
-            if upper > pixels[pixel] > lower:
+            if remaining_pixels[pixel]:
                 in_region.add(pixel)
                 new_pixels.add(pixel)
+                segmented_pixels.add(pixel)
             else:
                 not_in_region.add(pixel)
     return in_region
@@ -58,7 +49,7 @@ def watershed_hash(image):
     segmentation_img_size = 300
     gaussian_blur = 2
     median_filter = 3
-    segment_threshold = 128
+    segment_threshold = 128  # This wants to be static. Setting it as the median between peak and trough does not work
     min_segment_size = 100
     hash_func = imagehash.dhash
     limit_segments = None  # If you have memory requirements, you can limit to the M largest segments
@@ -70,25 +61,39 @@ def watershed_hash(image):
     image = image.filter(ImageFilter.GaussianBlur(gaussian_blur)).filter(ImageFilter.MedianFilter(median_filter))
     pixels = numpy.array(image).astype(numpy.float32)
 
+    # threshold pixels
+    threshold_pixels = pixels > segment_threshold
+    unassigned_pixels = numpy.full(pixels.shape, True, dtype=numpy.bool)
+
     segments = []
     already_segmented = set()
-    while numpy.nanmax(pixels) > segment_threshold:
-        segment = find_region(pixels, already_segmented, segment_threshold, segmentation_img_size, True)
-        # Apply segment
-        if len(segment) > min_segment_size:
-            segments.append(segment)
-        for pix in segment:
-            pixels[pix] = numpy.NaN
-        already_segmented.update(segment)
 
-    while len(already_segmented) < segmentation_img_size * segmentation_img_size:
-        segment = find_region(pixels, already_segmented, segment_threshold, segmentation_img_size, False)
+    # Add all the pixels around the border outside the image:
+    already_segmented.update([(-1, z) for z in range(segmentation_img_size)])
+    already_segmented.update([(z, -1) for z in range(segmentation_img_size)])
+    already_segmented.update([(segmentation_img_size, z) for z in range(segmentation_img_size)])
+    already_segmented.update([(z, segmentation_img_size) for z in range(segmentation_img_size)])
+
+    # Find all the "hill" regions
+    while numpy.bitwise_and(threshold_pixels, unassigned_pixels).any():
+        remaining_pixels = numpy.bitwise_and(threshold_pixels, unassigned_pixels)
+        segment = find_region(remaining_pixels, already_segmented)
         # Apply segment
         if len(segment) > min_segment_size:
             segments.append(segment)
         for pix in segment:
-            pixels[pix] = numpy.NaN
-        already_segmented.update(segment)
+            unassigned_pixels[pix] = False
+
+    # Invert the threshold matrix, and find "valleys"
+    threshold_pixels_i = numpy.invert(threshold_pixels)
+    while len(already_segmented) < segmentation_img_size * segmentation_img_size:
+        remaining_pixels = numpy.bitwise_and(threshold_pixels_i, unassigned_pixels)
+        segment = find_region(remaining_pixels, already_segmented)
+        # Apply segment
+        if len(segment) > min_segment_size:
+            segments.append(segment)
+        for pix in segment:
+            unassigned_pixels[pix] = False
 
     # If there are no segments, have 1 segment including the whole image
     if not segments:
