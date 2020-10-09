@@ -390,7 +390,7 @@ class ImageMultiHash(object):
 			return False
 		return self.matches(other)
 
-	def matches(self, other_hash, region_cutoff=1, hamming_cutoff=None, bit_error_rate=None):
+	def matches(self, other_hash, region_cutoff=1, hamming_cutoff=None, bit_error_rate=0.25):
 		"""
 		Checks whether this hash matches another crop resistant hash, `other_hash`.
 		:param other_hash: The crop resistant hash to compare against
@@ -398,8 +398,6 @@ class ImageMultiHash(object):
 		:param hamming_cutoff: The maximum hamming distance to a region hash in the target hash
 		:param bit_error_rate: Percentage of bits which can be incorrect, an alternative to the hamming cutoff
 		"""
-		if hamming_cutoff is None and bit_error_rate is None:
-			bit_error_rate = 0.25
 		if hamming_cutoff is None:
 			hamming_cutoff = len(self.segment_hashes[0]) * bit_error_rate
 		matches = 0
