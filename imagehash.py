@@ -588,14 +588,10 @@ def segmented_hash(
 		bounding_box = orig_image.crop((min_x, min_y, max_x, max_y))
 		hashes.append(hash_func(bounding_box))
 		# Show bounding box
-		# show_segments(image, segment)
+		# im_segment = image.copy()
+		# for pix in segment:
+		# 	im_segment.putpixel(pix[::-1], 255)
+		# im_segment.show()
 		# bounding_box.show()
 
 	return CropResistantHash(hashes)
-
-
-def show_segments(image, segment):
-	im_segment = image.copy()
-	for pix in segment:
-		im_segment.putpixel(pix[::-1], 255)
-	im_segment.show()
