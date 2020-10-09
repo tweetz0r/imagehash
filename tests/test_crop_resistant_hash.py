@@ -13,14 +13,14 @@ class Test(TestImageHash):
         self.peppers = self.get_data_image("peppers.png")
 
     def test_segmented_hash(self):
-        original_hash = imagehash.segmented_hash(self.image)
+        original_hash = imagehash.crop_resistant_hash(self.image)
         rotate_image = self.image.rotate(-1)
-        small_rotate_hash = imagehash.segmented_hash(rotate_image)
+        small_rotate_hash = imagehash.crop_resistant_hash(rotate_image)
         emsg = ('slightly rotated image should have '
                 'similar hash {} {}'.format(original_hash, small_rotate_hash))
         self.assertTrue(original_hash.matches(small_rotate_hash), emsg)
         rotate_image = self.image.rotate(-90)
-        large_rotate_hash = imagehash.segmented_hash(rotate_image)
+        large_rotate_hash = imagehash.crop_resistant_hash(rotate_image)
         emsg = ('rotated image should have different '
                 'hash {} {}'.format(original_hash, large_rotate_hash))
         self.assertFalse(original_hash.matches(large_rotate_hash), emsg)
@@ -33,16 +33,16 @@ class Test(TestImageHash):
         )
 
     def test_segmented_hash__hash_func(self):
-        segmented_ahash = imagehash.segmented_hash(self.image, imagehash.average_hash)
-        segmented_dhash = imagehash.segmented_hash(self.image, imagehash.dhash)
+        segmented_ahash = imagehash.crop_resistant_hash(self.image, imagehash.average_hash)
+        segmented_dhash = imagehash.crop_resistant_hash(self.image, imagehash.dhash)
         self.assertFalse(
             segmented_ahash.matches(segmented_dhash),
             "Segmented hash should not match when the underlying hashing method is not the same"
         )
 
     def test_segmented_hash__limit_segments(self):
-        segmented_orig = imagehash.segmented_hash(self.image)
-        segmented_limit = imagehash.segmented_hash(self.image, limit_segments=1)
+        segmented_orig = imagehash.crop_resistant_hash(self.image)
+        segmented_limit = imagehash.crop_resistant_hash(self.image, limit_segments=1)
         self.assertGreaterEqual(
             len(segmented_orig.segment_hashes), len(segmented_limit.segment_hashes),
             "Limit segments should mean there are fewer segments"
@@ -53,8 +53,8 @@ class Test(TestImageHash):
         )
 
     def test_segmented_hash__segment_threshold(self):
-        segmented_low_threshold = imagehash.segmented_hash(self.image, segment_threshold=20)
-        segmented_high_threshold = imagehash.segmented_hash(self.image, segment_threshold=250)
+        segmented_low_threshold = imagehash.crop_resistant_hash(self.image, segment_threshold=20)
+        segmented_high_threshold = imagehash.crop_resistant_hash(self.image, segment_threshold=250)
         self.assertFalse(
             segmented_low_threshold.matches(segmented_high_threshold, region_cutoff=3),
             "Segmented hash should not match when segment threshold is changed"
@@ -62,18 +62,18 @@ class Test(TestImageHash):
 
     def test_segmentation_image_size(self):
         start_time = datetime.now()
-        imagehash.segmented_hash(self.image, segmentation_image_size=200)
+        imagehash.crop_resistant_hash(self.image, segmentation_image_size=200)
         small_timed = datetime.now() - start_time
 
         start_time = datetime.now()
-        imagehash.segmented_hash(self.image, segmentation_image_size=400)
+        imagehash.crop_resistant_hash(self.image, segmentation_image_size=400)
         large_timed = datetime.now() - start_time
 
         self.assertGreater(large_timed, small_timed, "Hashing should take longer when the segmentation image is larger")
 
     def test_min_segment_size(self):
-        small_segments_hash = imagehash.segmented_hash(self.peppers, min_segment_size=100)
-        big_segments_hash = imagehash.segmented_hash(self.peppers, min_segment_size=1000)
+        small_segments_hash = imagehash.crop_resistant_hash(self.peppers, min_segment_size=100)
+        big_segments_hash = imagehash.crop_resistant_hash(self.peppers, min_segment_size=1000)
 
         self.assertGreater(
             len(small_segments_hash.segment_hashes),
@@ -89,8 +89,8 @@ class Test(TestImageHash):
         full_image = self.peppers
         cropped_image = self.get_data_image("peppers_crop.png")
 
-        full_hash = imagehash.segmented_hash(full_image)
-        crop_hash = imagehash.segmented_hash(cropped_image)
+        full_hash = imagehash.crop_resistant_hash(full_image)
+        crop_hash = imagehash.crop_resistant_hash(cropped_image)
 
         self.assertEqual(crop_hash, full_hash, "Cropped image hash should match full image hash")
 

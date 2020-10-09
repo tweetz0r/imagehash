@@ -496,7 +496,7 @@ def _find_region(remaining_pixels, segmented_pixels):
 	return in_region
 
 
-def segmented_hash(
+def crop_resistant_hash(
 		image,
 		hash_func=None,
 		limit_segments=None,
