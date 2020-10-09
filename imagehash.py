@@ -501,7 +501,7 @@ def segmented_hash(
 		hash_func=None,
 		limit_segments=None,
 		segment_threshold=128,
-		min_segment_size=100,
+		min_segment_size=500,
 		segmentation_image_size=300
 	):
 	"""
