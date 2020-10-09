@@ -396,7 +396,8 @@ class ImageMultiHash(object):
 		:param other_hash: The crop resistant hash to compare against
 		:param region_cutoff: The minimum number of regions which must have a matching hash
 		:param hamming_cutoff: The maximum hamming distance to a region hash in the target hash
-		:param bit_error_rate: Percentage of bits which can be incorrect, an alternative to the hamming cutoff
+		:param bit_error_rate: Percentage of bits which can be incorrect, an alternative to the hamming cutoff. The
+		default of 0.25 means that the segment hashes can be up to 25% different
 		"""
 		if hamming_cutoff is None:
 			hamming_cutoff = len(self.segment_hashes[0]) * bit_error_rate
