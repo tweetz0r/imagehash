@@ -10,6 +10,7 @@ from .utils import TestImageHash
 class Test(TestImageHash):
     def setUp(self):
         self.image = self.get_data_image()
+        self.peppers = self.get_data_image("peppers.png")
 
     def test_segmented_hash(self):
         original_hash = imagehash.segmented_hash(self.image)
@@ -70,6 +71,28 @@ class Test(TestImageHash):
 
         self.assertGreater(large_timed, small_timed, "Hashing should take longer when the segmentation image is larger")
 
+    def test_min_segment_size(self):
+        small_segments_hash = imagehash.segmented_hash(self.peppers, min_segment_size=100)
+        big_segments_hash = imagehash.segmented_hash(self.peppers, min_segment_size=1000)
+
+        self.assertGreater(
+            len(small_segments_hash.segment_hashes),
+            len(big_segments_hash.segment_hashes),
+            "Small segment size limit should lead to larger number of segments detected."
+        )
+        self.assertEqual(
+            small_segments_hash.matches(big_segments_hash),
+            "Hashes should still match, as large segments are present in both"
+        )
+
+    def test_crop_resistance(self):
+        full_image = self.peppers
+        cropped_image = self.get_data_image("peppers_crop.png")
+
+        full_hash = imagehash.segmented_hash(full_image)
+        crop_hash = imagehash.segmented_hash(cropped_image)
+
+        self.assertEqual(crop_hash, full_hash, "Cropped image hash should match full image hash")
 
 if __name__ == '__main__':
     unittest.main()
