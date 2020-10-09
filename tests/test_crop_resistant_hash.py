@@ -81,7 +81,8 @@ class Test(TestImageHash):
             "Small segment size limit should lead to larger number of segments detected."
         )
         self.assertEqual(
-            small_segments_hash.matches(big_segments_hash),
+            small_segments_hash,
+            big_segments_hash,
             "Hashes should still match, as large segments are present in both"
         )
 
