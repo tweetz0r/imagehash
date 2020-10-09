@@ -377,7 +377,11 @@ def colorhash(image, binbits=3):
 	return ImageHash(numpy.asarray(bitarray).reshape((-1, binbits)))
 
 
-class CropResistantHash(object):
+class ImageMultiHash(object):
+	"""
+	This is an image hash containing a list of individual hashes for segments of the image.
+	The matching logic is implemented as described in Efficient Cropping-Resistant Robust Image Hashing
+	"""
 	def __init__(self, hashes):
 		self.segment_hashes = hashes
 
@@ -594,4 +598,4 @@ def crop_resistant_hash(
 		# im_segment.show()
 		# bounding_box.show()
 
-	return CropResistantHash(hashes)
+	return ImageMultiHash(hashes)
