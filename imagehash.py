@@ -421,21 +421,21 @@ class CropResistantHash(object):
 			hamming_cutoff = len(self.segment_hashes[0]) * bit_error_rate
 		# Get the closest hash for each region hash
 		votes = [[]] * len(other_hashes)
-		for region_hash in self.segment_hashes:
+		for segment_hash in self.segment_hashes:
 			if min(
-					region_hash - other_region_hash
+					segment_hash - other_segment_hash
 					for other_hash in other_hashes
-					for other_region_hash in other_hash.region_hashes
+					for other_segment_hash in other_hash.segment_hashes
 			) > hamming_cutoff:
 				# Discard any where hamming distance is above threshold
 				continue
 			lowest_hash = min(
 				range(len(other_hashes)),
 				key=lambda x: min(
-					other_hashes[x].region_hashes, key=lambda other_region_hash: region_hash-other_region_hash
-				)
+					other_hashes[x].segment_hashes, key=lambda other_segment_hash: segment_hash-other_segment_hash
+				) - segment_hash
 			)
-			votes[lowest_hash].append(region_hash)
+			votes[lowest_hash].append(segment_hash)
 		# Select hash by majority vote of list
 		max_votes = max(votes, key=len)
 		if max_votes is None:
@@ -445,14 +445,20 @@ class CropResistantHash(object):
 		return other_hashes[min(
 			winner_idxs,
 			key=lambda other_hash_idx: sum(
-				other_region_hash - region_hash
-				for region_hash in max_votes[other_hash_idx]
-				for other_region_hash in other_hashes[other_hash_idx]
+				other_segment_hash - segment_hash
+				for segment_hash in self.segment_hashes
+				for other_segment_hash in other_hashes[other_hash_idx].segment_hashes
 			)
 		)]
 
 
 def _find_region(remaining_pixels, segmented_pixels):
+	"""
+	Finds a region and returns a set of pixel coordinates for it.
+	:param remaining_pixels: A numpy bool array, with True meaning the pixels are remaining to segment
+	:param segmented_pixels: A set of pixel coordinates which have already been assigned to segment. This will be
+	updated with the new pixels added to the returned segment.
+	"""
 	in_region = set()
 	not_in_region = set()
 	# Find the first pixel in remaining_pixels with a value of True
@@ -566,7 +572,7 @@ def segmented_hash(
 
 	# If segment limit is set, discard the smaller segments
 	if limit_segments:
-		segments = set(sorted(segments, key=lambda s: len(s), reverse=True)[:limit_segments])
+		segments = sorted(segments, key=lambda s: len(s), reverse=True)[:limit_segments]
 
 	# Create bounding box for each segment
 	hashes = []
