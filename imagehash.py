@@ -521,9 +521,6 @@ def crop_resistant_hash(
 	:param min_segment_size: Minimum number of pixels for a hashable segment
 	:param segmentation_image_size: Size which the image is resized to before segmentation
 	"""
-	# Define some tunable params
-	gaussian_blur = 2
-	median_filter = 3
 	if hash_func is None:
 		hash_func = dhash
 
@@ -531,7 +528,7 @@ def crop_resistant_hash(
 	# Convert to gray scale and resize
 	image = image.convert("L").resize((segmentation_image_size, segmentation_image_size), Image.ANTIALIAS)
 	# Add filters
-	image = image.filter(ImageFilter.GaussianBlur(gaussian_blur)).filter(ImageFilter.MedianFilter(median_filter))
+	image = image.filter(ImageFilter.GaussianBlur()).filter(ImageFilter.MedianFilter())
 	pixels = numpy.array(image).astype(numpy.float32)
 
 	# threshold pixels
