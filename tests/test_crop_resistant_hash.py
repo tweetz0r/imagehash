@@ -88,12 +88,22 @@ class Test(TestImageHash):
 
     def test_crop_resistance(self):
         full_image = self.peppers
-        cropped_image = self.get_data_image("peppers_crop.png")
+        width, height = full_image.size
+        crop_10 = full_image.crop((0.05 * width, 0.05 * height, 0.95 * width, 0.95 * height))
+        crop_40 = full_image.crop((0.2 * width, 0.2 * height, 0.8 * width, 0.8 * height))
+        crop_asymmetric = full_image.crop((0, 0.3 * height, 0.4 * width, 0.75 * height))
 
         full_hash = imagehash.crop_resistant_hash(full_image)
-        crop_hash = imagehash.crop_resistant_hash(cropped_image)
+        crop_hash_10 = imagehash.crop_resistant_hash(crop_10)
+        crop_hash_40 = imagehash.crop_resistant_hash(crop_40)
+        crop_hash_asymmetric = imagehash.crop_resistant_hash(crop_asymmetric)
 
-        self.assertEqual(crop_hash, full_hash, "Cropped image hash should match full image hash")
+        self.assertEqual(crop_hash_10, full_hash, "Slightly cropped image hash should match full image hash")
+        self.assertEqual(crop_hash_40, full_hash, "Heavily cropped image hash should match full image hash")
+        self.assertEqual(
+            crop_hash_asymmetric, full_hash, "Asymmetrically cropped image hash should match full image hash"
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
