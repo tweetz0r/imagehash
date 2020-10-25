@@ -137,7 +137,7 @@ def hex_to_hash(hexstr):
 	bit_rows = [binary_array[i:i+hash_size] for i in range(0, len(binary_array), hash_size)]
 	hash_array = numpy.array([[bool(int(d)) for d in row] for row in bit_rows])
 	return ImageHash(hash_array)
-	
+
 
 def hex_to_flathash(hexstr, hashsize):
 	hash_size = int(len(hexstr)*4 / (hashsize))
@@ -240,7 +240,7 @@ def dhash(image, hash_size=8):
 	Difference Hash computation.
 
 	following http://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html
-	
+
 	computes differences horizontally
 
 	@image must be a PIL instance.
@@ -277,7 +277,7 @@ def dhash_vertical(image, hash_size=8):
 def whash(image, hash_size = 8, image_scale = None, mode = 'haar', remove_max_haar_ll = True):
 	"""
 	Wavelet Hash computation.
-	
+
 	based on https://www.kaggle.com/c/avito-duplicate-ads-detection/
 
 	@image must be a PIL instance.
@@ -390,69 +390,61 @@ class ImageMultiHash(object):
 			return False
 		return self.matches(other)
 
-	def matches(self, other_hash, region_cutoff=1, hamming_cutoff=None, bit_error_rate=0.25):
+	def __sub__(self, other):
+		matches, sum_distance = self.hash_diff(other)
+		max_distance = matches * len(self.segment_hashes[0])
+		return matches + (sum_distance / max_distance)
+
+	def hash_diff(self, other_hash, hamming_cutoff=None, bit_error_rate=None):
+		"""
+		Gets the difference between two multi-hashes, as a tuple. The first element of the tuple is the number of
+		matching segments, and the second element is the sum of the hamming distances of matching hashes.
+		:param other_hash: The image multi hash to compare against
+		:param hamming_cutoff: The maximum hamming distance to a region hash in the target hash
+		:param bit_error_rate: Percentage of bits which can be incorrect, an alternative to the hamming cutoff. The
+		default of 0.25 means that the segment hashes can be up to 25% different
+		"""
+		# Set default hamming cutoff if it's not set.
+		if hamming_cutoff is None and bit_error_rate is None:
+			bit_error_rate = 0.25
+		if hamming_cutoff is None:
+			hamming_cutoff = len(self.segment_hashes[0]) * bit_error_rate
+		# Get the hash distance for each region hash within cutoff
+		distances = []
+		for segment_hash in self.segment_hashes:
+			lowest_distance = min(
+				segment_hash - other_segment_hash
+				for other_segment_hash in other_hash.segment_hashes
+			)
+			if lowest_distance > hamming_cutoff:
+				continue
+			distances.append(lowest_distance)
+		return len(distances), sum(distances)
+
+	def matches(self, other_hash, region_cutoff=1, hamming_cutoff=None, bit_error_rate=None):
 		"""
 		Checks whether this hash matches another crop resistant hash, `other_hash`.
-		:param other_hash: The crop resistant hash to compare against
+		:param other_hash: The image multi hash to compare against
 		:param region_cutoff: The minimum number of regions which must have a matching hash
 		:param hamming_cutoff: The maximum hamming distance to a region hash in the target hash
 		:param bit_error_rate: Percentage of bits which can be incorrect, an alternative to the hamming cutoff. The
 		default of 0.25 means that the segment hashes can be up to 25% different
 		"""
-		if hamming_cutoff is None:
-			hamming_cutoff = len(self.segment_hashes[0]) * bit_error_rate
-		matches = 0
-		for segment_hash in self.segment_hashes:
-			if any(
-				segment_hash - other_segment_hashes <= hamming_cutoff
-				for other_segment_hashes in other_hash.segment_hashes
-			):
-				matches += 1
+		matches, _ = self.hash_diff(other_hash, hamming_cutoff, bit_error_rate)
 		return matches >= region_cutoff
 
 	def best_match(self, other_hashes, hamming_cutoff=None, bit_error_rate=None):
 		"""
 		Returns the hash in a list which is the best match to the current hash
-		:param other_hashes: A list of crop-resistant hashes to compare against
+		:param other_hashes: A list of image multi hashes to compare against
 		:param hamming_cutoff: The maximum hamming distance to a region hash in the target hash
-		:param bit_error_rate: Percentage of bits which can be incorrect, an alternative to the hamming cutoff
+		:param bit_error_rate: Percentage of bits which can be incorrect, an alternative to the hamming cutoff.
+		Defaults to 0.25 if unset, which means the hash can be 25% different
 		"""
-		# Return whichever has most matching regions, if a tie, whichever has lower overall hamming distance
-		if hamming_cutoff is None and bit_error_rate is None:
-			bit_error_rate = 0.25
-		if hamming_cutoff is None:
-			hamming_cutoff = len(self.segment_hashes[0]) * bit_error_rate
-		# Get the closest hash for each region hash
-		votes = [[]] * len(other_hashes)
-		for segment_hash in self.segment_hashes:
-			if min(
-					segment_hash - other_segment_hash
-					for other_hash in other_hashes
-					for other_segment_hash in other_hash.segment_hashes
-			) > hamming_cutoff:
-				# Discard any where hamming distance is above threshold
-				continue
-			lowest_hash = min(
-				range(len(other_hashes)),
-				key=lambda x: min(
-					other_hashes[x].segment_hashes, key=lambda other_segment_hash: segment_hash-other_segment_hash
-				) - segment_hash
-			)
-			votes[lowest_hash].append(segment_hash)
-		# Select hash by majority vote of list
-		max_votes = max(votes, key=len)
-		if max_votes is None:
-			return None
-		winner_idxs = [i for i, j in enumerate(votes) if len(j) == len(max_votes)]
-		# In the case of a draw, pick the image with the lower overall hamming distance
-		return other_hashes[min(
-			winner_idxs,
-			key=lambda other_hash_idx: sum(
-				other_segment_hash - segment_hash
-				for segment_hash in self.segment_hashes
-				for other_segment_hash in other_hashes[other_hash_idx].segment_hashes
-			)
-		)]
+		return min(
+			other_hashes,
+			key=lambda other_hash: self.hash_diff(other_hash, hamming_cutoff, bit_error_rate)
+		)
 
 
 def _find_region(remaining_pixels, segmented_pixels):
