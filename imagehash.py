@@ -390,15 +390,16 @@ class ImageMultiHash(object):
 			return False
 		return self.matches(other)
 
-	def __sub__(self, other):
-		matches, sum_distance = self.hash_diff(other)
+	def __sub__(self, other, hamming_cutoff=None, bit_error_rate=None):
+		matches, sum_distance = self.hash_diff(other, hamming_cutoff, bit_error_rate)
 		max_distance = matches * len(self.segment_hashes[0])
-		return matches + (sum_distance / max_distance)
+		return matches + (1 - (sum_distance / max_distance))
 
 	def hash_diff(self, other_hash, hamming_cutoff=None, bit_error_rate=None):
 		"""
 		Gets the difference between two multi-hashes, as a tuple. The first element of the tuple is the number of
 		matching segments, and the second element is the sum of the hamming distances of matching hashes.
+		NOTE: Do not order directly by this tuple, as higher is better for matches, and worse for hamming cutoff.
 		:param other_hash: The image multi hash to compare against
 		:param hamming_cutoff: The maximum hamming distance to a region hash in the target hash
 		:param bit_error_rate: Percentage of bits which can be incorrect, an alternative to the hamming cutoff. The
@@ -443,7 +444,7 @@ class ImageMultiHash(object):
 		"""
 		return min(
 			other_hashes,
-			key=lambda other_hash: self.hash_diff(other_hash, hamming_cutoff, bit_error_rate)
+			key=lambda other_hash: self.__sub__(other_hash, hamming_cutoff, bit_error_rate)
 		)
 
 
