@@ -492,38 +492,7 @@ def _find_region(remaining_pixels, segmented_pixels):
 	return in_region
 
 
-def crop_resistant_hash(
-		image,
-		hash_func=None,
-		limit_segments=None,
-		segment_threshold=128,
-		min_segment_size=500,
-		segmentation_image_size=300
-	):
-	"""
-	Creates a CropResistantHash object, by the algorithm described in the paper "Efficient Cropping-Resistant Robust
-	Image Hashing". DOI 10.1109/ARES.2014.85
-	This algorithm partitions the image into bright and dark segments, using a watershed-like algorithm, and then does
-	an image hash on each segment. This makes the image much more resistant to cropping than other algorithms, with
-	the paper claiming resistance to up to 50% cropping, while most other algorithms stop at about 5% cropping.
-	:param image: The image to hash
-	:param hash_func: The hashing function to use
-	:param limit_segments: If you have storage requirements, you can limit to hashing only the M largest segments
-	:param segment_threshold: Brightness threshold between hills and valleys. This should be static, putting it between
-	peak and trough dynamically breaks the matching
-	:param min_segment_size: Minimum number of pixels for a hashable segment
-	:param segmentation_image_size: Size which the image is resized to before segmentation
-	"""
-	if hash_func is None:
-		hash_func = dhash
-
-	orig_image = image.copy()
-	# Convert to gray scale and resize
-	image = image.convert("L").resize((segmentation_image_size, segmentation_image_size), Image.ANTIALIAS)
-	# Add filters
-	image = image.filter(ImageFilter.GaussianBlur()).filter(ImageFilter.MedianFilter())
-	pixels = numpy.array(image).astype(numpy.float32)
-
+def _find_all_segments(pixels, segment_threshold, segmentation_image_size, min_segment_size):
 	# threshold pixels
 	threshold_pixels = pixels > segment_threshold
 	unassigned_pixels = numpy.full(pixels.shape, True, dtype=numpy.bool)
@@ -557,6 +526,43 @@ def crop_resistant_hash(
 			segments.append(segment)
 		for pix in segment:
 			unassigned_pixels[pix] = False
+
+	return segments
+
+
+def crop_resistant_hash(
+		image,
+		hash_func=None,
+		limit_segments=None,
+		segment_threshold=128,
+		min_segment_size=500,
+		segmentation_image_size=300
+	):
+	"""
+	Creates a CropResistantHash object, by the algorithm described in the paper "Efficient Cropping-Resistant Robust
+	Image Hashing". DOI 10.1109/ARES.2014.85
+	This algorithm partitions the image into bright and dark segments, using a watershed-like algorithm, and then does
+	an image hash on each segment. This makes the image much more resistant to cropping than other algorithms, with
+	the paper claiming resistance to up to 50% cropping, while most other algorithms stop at about 5% cropping.
+	:param image: The image to hash
+	:param hash_func: The hashing function to use
+	:param limit_segments: If you have storage requirements, you can limit to hashing only the M largest segments
+	:param segment_threshold: Brightness threshold between hills and valleys. This should be static, putting it between
+	peak and trough dynamically breaks the matching
+	:param min_segment_size: Minimum number of pixels for a hashable segment
+	:param segmentation_image_size: Size which the image is resized to before segmentation
+	"""
+	if hash_func is None:
+		hash_func = dhash
+
+	orig_image = image.copy()
+	# Convert to gray scale and resize
+	image = image.convert("L").resize((segmentation_image_size, segmentation_image_size), Image.ANTIALIAS)
+	# Add filters
+	image = image.filter(ImageFilter.GaussianBlur()).filter(ImageFilter.MedianFilter())
+	pixels = numpy.array(image).astype(numpy.float32)
+
+	segments = _find_all_segments(pixels, segment_threshold, segmentation_image_size, min_segment_size)
 
 	# If there are no segments, have 1 segment including the whole image
 	if not segments:
