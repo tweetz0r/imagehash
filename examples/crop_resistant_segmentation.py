@@ -35,5 +35,5 @@ image = image.convert("RGB")
 # Colour in segments
 for num, segment in enumerate(segments):
 	for x, y in segment:
-		image.putpixel((y, x), RAINBOW[num])
+		image.putpixel((y, x), RAINBOW[num % len(RAINBOW)])
 image.show()
