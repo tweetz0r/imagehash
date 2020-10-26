@@ -492,7 +492,14 @@ def _find_region(remaining_pixels, segmented_pixels):
 	return in_region
 
 
-def _find_all_segments(pixels, segment_threshold, segmentation_image_size, min_segment_size):
+def _find_all_segments(pixels, segment_threshold, min_segment_size):
+	"""
+	Finds all the regions within an image pixel array, and returns a list of the regions.
+	:param pixels: A numpy array of the pixel brightnesses.
+	:param segment_threshold: The brightness threshold to use when differentiating between hills and valleys.
+	:param min_segment_size: The minimum number of pixels for a segment.
+	"""
+	img_width, img_height = pixels.shape
 	# threshold pixels
 	threshold_pixels = pixels > segment_threshold
 	unassigned_pixels = numpy.full(pixels.shape, True, dtype=numpy.bool)
@@ -501,10 +508,10 @@ def _find_all_segments(pixels, segment_threshold, segmentation_image_size, min_s
 	already_segmented = set()
 
 	# Add all the pixels around the border outside the image:
-	already_segmented.update([(-1, z) for z in range(segmentation_image_size)])
-	already_segmented.update([(z, -1) for z in range(segmentation_image_size)])
-	already_segmented.update([(segmentation_image_size, z) for z in range(segmentation_image_size)])
-	already_segmented.update([(z, segmentation_image_size) for z in range(segmentation_image_size)])
+	already_segmented.update([(-1, z) for z in range(img_height)])
+	already_segmented.update([(z, -1) for z in range(img_width)])
+	already_segmented.update([(img_width, z) for z in range(img_height)])
+	already_segmented.update([(z, img_height) for z in range(img_width)])
 
 	# Find all the "hill" regions
 	while numpy.bitwise_and(threshold_pixels, unassigned_pixels).any():
@@ -518,7 +525,7 @@ def _find_all_segments(pixels, segment_threshold, segmentation_image_size, min_s
 
 	# Invert the threshold matrix, and find "valleys"
 	threshold_pixels_i = numpy.invert(threshold_pixels)
-	while len(already_segmented) < segmentation_image_size * segmentation_image_size:
+	while len(already_segmented) < img_width * img_height:
 		remaining_pixels = numpy.bitwise_and(threshold_pixels_i, unassigned_pixels)
 		segment = _find_region(remaining_pixels, already_segmented)
 		# Apply segment
@@ -562,7 +569,7 @@ def crop_resistant_hash(
 	image = image.filter(ImageFilter.GaussianBlur()).filter(ImageFilter.MedianFilter())
 	pixels = numpy.array(image).astype(numpy.float32)
 
-	segments = _find_all_segments(pixels, segment_threshold, segmentation_image_size, min_segment_size)
+	segments = _find_all_segments(pixels, segment_threshold, min_segment_size)
 
 	# If there are no segments, have 1 segment including the whole image
 	if not segments:

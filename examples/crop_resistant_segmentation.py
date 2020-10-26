@@ -29,7 +29,7 @@ image = full_image.convert("L").resize((IMG_SIZE, IMG_SIZE), Image.ANTIALIAS)
 image = image.filter(ImageFilter.GaussianBlur()).filter(ImageFilter.MedianFilter())
 pixels = numpy.array(image).astype(numpy.float32)
 # Split segments
-segments = imagehash._find_all_segments(pixels, SEGMENT_THRESHOLD, IMG_SIZE, MIN_SEGMENT_SIZE)
+segments = imagehash._find_all_segments(pixels, SEGMENT_THRESHOLD, MIN_SEGMENT_SIZE)
 # Change back to RGB
 image = image.convert("RGB")
 # Colour in segments
