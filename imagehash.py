@@ -406,6 +406,12 @@ class ImageMultiHash(object):
 	def __hash__(self):
 		return hash(tuple(hash(segment) for segment in self.segment_hashes))
 
+	def __str__(self):
+		return ",".join(str(x) for x in self.segment_hashes)
+
+	def __repr__(self):
+		return repr(self.segment_hashes)
+
 	def hash_diff(self, other_hash, hamming_cutoff=None, bit_error_rate=None):
 		"""
 		Gets the difference between two multi-hashes, as a tuple. The first element of the tuple is the number of
