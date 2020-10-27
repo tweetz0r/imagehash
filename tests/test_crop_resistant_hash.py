@@ -93,7 +93,7 @@ class Test(TestImageHash):
         crop_40 = full_image.crop((0.2 * width, 0.2 * height, 0.8 * width, 0.8 * height))
         crop_asymmetric = full_image.crop((0, 0.3 * height, 0.4 * width, 0.75 * height))
 
-        full_hash = imagehash.crop_resistant_hash(full_image)
+        full_hash = imagehash.crop_resistant_hash(full_image, min_segment_size=200)
         crop_hash_10 = imagehash.crop_resistant_hash(crop_10)
         crop_hash_40 = imagehash.crop_resistant_hash(crop_40)
         crop_hash_asymmetric = imagehash.crop_resistant_hash(crop_asymmetric)
