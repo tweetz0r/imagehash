@@ -392,8 +392,13 @@ class ImageMultiHash(object):
 
 	def __sub__(self, other, hamming_cutoff=None, bit_error_rate=None):
 		matches, sum_distance = self.hash_diff(other, hamming_cutoff, bit_error_rate)
+		max_difference = len(self.segment_hashes)
+		if matches == 0:
+			return max_difference
 		max_distance = matches * len(self.segment_hashes[0])
-		return matches + (1 - (sum_distance / max_distance))
+		tie_breaker = 1 - (sum_distance / max_distance)
+		match_score = matches + tie_breaker
+		return max_difference - match_score
 
 	def hash_diff(self, other_hash, hamming_cutoff=None, bit_error_rate=None):
 		"""
