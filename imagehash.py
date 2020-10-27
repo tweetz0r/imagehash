@@ -400,6 +400,9 @@ class ImageMultiHash(object):
 		match_score = matches + tie_breaker
 		return max_difference - match_score
 
+	def __hash__(self):
+		return tuple(hash(segment) for segment in self.segment_hashes)
+
 	def hash_diff(self, other_hash, hamming_cutoff=None, bit_error_rate=None):
 		"""
 		Gets the difference between two multi-hashes, as a tuple. The first element of the tuple is the number of
