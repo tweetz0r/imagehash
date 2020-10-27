@@ -44,13 +44,12 @@ if __name__ == '__main__':
 Identifies similar images in the directory.
 
 Method: 
-  ahash:          Average hash
-  phash:          Perceptual hash
-  dhash:          Difference hash
-  whash-haar:     Haar wavelet hash
-  whash-db4:      Daubechies wavelet hash
-  colorhash:      HSV color hash
-  crop-resistant: Crop-resistant hash
+  ahash:      Average hash
+  phash:      Perceptual hash
+  dhash:      Difference hash
+  whash-haar: Haar wavelet hash
+  whash-db4:  Daubechies wavelet hash
+  colorhash:  HSV color hash
 
 (C) Johannes Buchner, 2013-2017
 """ % sys.argv[0])
@@ -69,8 +68,6 @@ Method:
         hashfunc = lambda img: imagehash.whash(img, mode='db4')
     elif hashmethod == 'colorhash':
         hashfunc = imagehash.colorhash
-    elif hashmethod == 'crop-resistant':
-        hashfunc = imagehash.crop_resistant_hash
     else:
         usage()
     userpaths = sys.argv[2:] if len(sys.argv) > 2 else "."
