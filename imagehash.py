@@ -401,7 +401,7 @@ class ImageMultiHash(object):
 		if matches == 0:
 			return max_difference
 		max_distance = matches * len(self.segment_hashes[0])
-		tie_breaker = 1 - (sum_distance / max_distance)
+		tie_breaker = 1 - (float(sum_distance) / max_distance)
 		match_score = matches + tie_breaker
 		return max_difference - match_score
 
@@ -597,8 +597,8 @@ def crop_resistant_hash(
 	hashes = []
 	for segment in segments:
 		orig_w, orig_h = orig_image.size
-		scale_w = orig_w / segmentation_image_size
-		scale_h = orig_h / segmentation_image_size
+		scale_w = float(orig_w) / segmentation_image_size
+		scale_h = float(orig_h) / segmentation_image_size
 		min_y = min(coord[0] for coord in segment) * scale_h
 		min_x = min(coord[1] for coord in segment) * scale_w
 		max_y = (max(coord[0] for coord in segment)+1) * scale_h
