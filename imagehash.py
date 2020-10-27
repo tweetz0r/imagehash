@@ -401,7 +401,7 @@ class ImageMultiHash(object):
 		return max_difference - match_score
 
 	def __hash__(self):
-		return tuple(hash(segment) for segment in self.segment_hashes)
+		return hash(tuple(hash(segment) for segment in self.segment_hashes))
 
 	def hash_diff(self, other_hash, hamming_cutoff=None, bit_error_rate=None):
 		"""
