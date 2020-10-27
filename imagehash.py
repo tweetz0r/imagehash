@@ -391,8 +391,6 @@ class ImageMultiHash(object):
 		return self.matches(other)
 
 	def __ne__(self, other):
-		if other is None:
-			return False
 		return not self.matches(other)
 
 	def __sub__(self, other, hamming_cutoff=None, bit_error_rate=None):
