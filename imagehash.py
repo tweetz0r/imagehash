@@ -506,6 +506,8 @@ def _find_region(remaining_pixels, segmented_pixels):
 def _find_all_segments(pixels, segment_threshold, min_segment_size):
 	"""
 	Finds all the regions within an image pixel array, and returns a list of the regions.
+	WARNING: You will get slightly different segmentation between pillow version 6 and version 7, due to a rounding
+	error in greyscale conversion which was fixed in pillow 7.0.0.
 	:param pixels: A numpy array of the pixel brightnesses.
 	:param segment_threshold: The brightness threshold to use when differentiating between hills and valleys.
 	:param min_segment_size: The minimum number of pixels for a segment.
@@ -562,6 +564,8 @@ def crop_resistant_hash(
 	This algorithm partitions the image into bright and dark segments, using a watershed-like algorithm, and then does
 	an image hash on each segment. This makes the image much more resistant to cropping than other algorithms, with
 	the paper claiming resistance to up to 50% cropping, while most other algorithms stop at about 5% cropping.
+	WARNING: You will get a slightly different result, due to slightly different segmentation, between pillow version 6
+	and version 7, due to a rounding error in greyscale conversion which was fixed in pillow 7.0.0.
 	:param image: The image to hash
 	:param hash_func: The hashing function to use
 	:param limit_segments: If you have storage requirements, you can limit to hashing only the M largest segments
