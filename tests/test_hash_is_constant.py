@@ -1,3 +1,5 @@
+import hashlib
+
 import numpy
 from PIL import ImageFilter
 from PIL import Image
@@ -58,10 +60,15 @@ class Test(TestImageHash):
 
 	def test_crop_resistant_segmentation(self):
 		# Image pre-processing
-		image = self.peppers.convert("L").resize((300, 300), Image.ANTIALIAS)
+		self.assertEqual(hashlib.md5(self.peppers.tobytes()).hexdigest(), "7c19bbf1c9184471ebb2e7e0086910c6")
+		image = self.peppers.convert("L")
+		self.assertEqual(hashlib.md5(image.tobytes()).hexdigest(), "61442e74c83cfea67d182481c24c5f3e")
+		image = image.resize((300, 300), Image.ANTIALIAS)
+		self.assertEqual(hashlib.md5(image.tobytes()).hexdigest(), "72f73a3ae87d7ae47be84dccb7ad106d")
 		# Add filters
 		image = image.filter(ImageFilter.GaussianBlur()).filter(ImageFilter.MedianFilter())
 		pixels = numpy.array(image).astype(numpy.float32)
+		self.assertEqual(hashlib.md5(image.tobytes()).hexdigest(), "3ae9f318f68a2d7c122256fbda6ca5ec")
 		# Segment
 		segments = imagehash._find_all_segments(pixels, 128, 500)
 		known_segment_count = 6
