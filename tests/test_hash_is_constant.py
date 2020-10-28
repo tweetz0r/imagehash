@@ -26,6 +26,11 @@ def _calculate_segment_properties(segment):
 
 
 def _pillow_has_convert_fix():
+	"""
+	Pillow version 7.0.0 introduced a fix for a rounding error in Image.convert("L") which means that segmentation is
+	slightly different after this release.
+	The PR which fixed the rounding and caused this inconsistency is https://github.com/python-pillow/Pillow/pull/4320
+	"""
 	return version.parse(PIL.__version__) >= version.parse("7.0.0")
 
 
