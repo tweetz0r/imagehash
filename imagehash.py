@@ -399,7 +399,7 @@ class ImageMultiHash(object):
 		if matches == 0:
 			return max_difference
 		max_distance = matches * len(self.segment_hashes[0])
-		tie_breaker = 1 - (float(sum_distance) / max_distance)
+		tie_breaker = 0 - (float(sum_distance) / max_distance)
 		match_score = matches + tie_breaker
 		return max_difference - match_score
 
