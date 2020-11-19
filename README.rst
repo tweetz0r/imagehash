@@ -107,13 +107,6 @@ For understanding hash distances, check out these excellent blog posts:
 * https://tech.okcupid.com/evaluating-perceptual-image-hashes-okcupid/
 * https://content-blockchain.org/research/testing-different-image-hash-functions/
 
-Contributing
-=============
-
-Pull requests and new features are warmly welcome.
-
-If you encounter a bug or have a question, please open a GitHub issue. You can also try Stack Overflow.
-
 Changelog
 ----------
 
@@ -134,13 +127,23 @@ Changelog
 
 * 1.0: Initial ahash, dhash, phash implementations.
 
+Contributing
+=============
+
+Pull requests and new features are warmly welcome.
+
+If you encounter a bug or have a question, please open a GitHub issue. You can also try Stack Overflow.
+
 Other projects
 ==============
 
 * http://blockhash.io/
 * https://github.com/acoomans/instagram-filters
 * https://pippy360.github.io/transformationInvariantImageSearch/
-
+* https://www.phash.org/
+* https://pypi.org/project/dhash/
+* https://github.com/thorn-oss/perception (based on imagehash code, depends on opencv)
+* https://docs.opencv.org/3.4/d4/d93/group__img__hash.html
 
 .. |Travis| image:: https://travis-ci.org/JohannesBuchner/imagehash.svg?branch=master
 .. _Travis: https://travis-ci.org/JohannesBuchner/imagehash
