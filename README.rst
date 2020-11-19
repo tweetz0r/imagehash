@@ -4,12 +4,12 @@ ImageHash
 
 An image hashing library written in Python. ImageHash supports:
 
-* Average hashing (`aHash`_)
-* Perceptual hashing (`pHash`_)
-* Difference hashing (`dHash`_)
-* Wavelet hashing (`wHash`_)
+* Average hashing (`aHashref`_)
+* Perceptual hashing (`pHashref`_)
+* Difference hashing (`dHashref`_)
+* Wavelet hashing (`wHashref`_)
 * HSV color hashing (colorhash)
-* Crop-resistant hashing (`crop_resistant_hash`_)
+* Crop-resistant hashing (`crop_resistant_hashref`_)
 
 |Travis|_ |Coveralls|_
 
@@ -62,12 +62,12 @@ images in a directory.
 
 Source hosted at GitHub: https://github.com/JohannesBuchner/imagehash
 
-.. _aHash: http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
-.. _pHash: http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
-.. _dHash: http://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html
-.. _wHash: https://fullstackml.com/2016/07/02/wavelet-image-hash-in-python/
+.. _aHashref: http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
+.. _pHashref: http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
+.. _dHashref: http://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html
+.. _wHashref: https://fullstackml.com/2016/07/02/wavelet-image-hash-in-python/
 .. _pypi: https://pypi.python.org/pypi/ImageHash
-.. _crop_resistant_hash: https://ieeexplore.ieee.org/document/6980335
+.. _crop_resistant_hashref: https://ieeexplore.ieee.org/document/6980335
 
 Examples
 =========
@@ -128,7 +128,7 @@ Changelog
 * 3.2: whash now also handles smaller-than-hash images
 
 * 3.0: dhash had a bug: It computed pixel differences vertically, not horizontally.
-       I modified it to follow `dHash`_. The old function is available as dhash_vertical.
+       I modified it to follow `dHashref`_. The old function is available as dhash_vertical.
 
 * 2.0: Added whash
 
