@@ -304,7 +304,7 @@ def whash(image, hash_size = 8, image_scale = None, mode = 'haar', remove_max_ha
 	dwt_level = ll_max_level - level
 
 	image = image.convert("L").resize((image_scale, image_scale), Image.ANTIALIAS)
-	pixels = numpy.asarray(image) / 255
+	pixels = numpy.asarray(image) / 255.
 
 	# Remove low level frequency LL(max_ll) if @remove_max_haar_ll using haar filter
 	if remove_max_haar_ll:
@@ -390,10 +390,27 @@ class ImageMultiHash(object):
 			return False
 		return self.matches(other)
 
+	def __ne__(self, other):
+		return not self.matches(other)
+
 	def __sub__(self, other, hamming_cutoff=None, bit_error_rate=None):
 		matches, sum_distance = self.hash_diff(other, hamming_cutoff, bit_error_rate)
+		max_difference = len(self.segment_hashes)
+		if matches == 0:
+			return max_difference
 		max_distance = matches * len(self.segment_hashes[0])
-		return matches + (1 - (sum_distance / max_distance))
+		tie_breaker = 0 - (float(sum_distance) / max_distance)
+		match_score = matches + tie_breaker
+		return max_difference - match_score
+
+	def __hash__(self):
+		return hash(tuple(hash(segment) for segment in self.segment_hashes))
+
+	def __str__(self):
+		return ",".join(str(x) for x in self.segment_hashes)
+
+	def __repr__(self):
+		return repr(self.segment_hashes)
 
 	def hash_diff(self, other_hash, hamming_cutoff=None, bit_error_rate=None):
 		"""
@@ -495,6 +512,9 @@ def _find_region(remaining_pixels, segmented_pixels):
 def _find_all_segments(pixels, segment_threshold, min_segment_size):
 	"""
 	Finds all the regions within an image pixel array, and returns a list of the regions.
+
+	Note: Slightly different segmentations are produced when using pillow version 6 vs. >=7, due to a change in
+	rounding in the greyscale conversion.
 	:param pixels: A numpy array of the pixel brightnesses.
 	:param segment_threshold: The brightness threshold to use when differentiating between hills and valleys.
 	:param min_segment_size: The minimum number of pixels for a segment.
@@ -551,6 +571,9 @@ def crop_resistant_hash(
 	This algorithm partitions the image into bright and dark segments, using a watershed-like algorithm, and then does
 	an image hash on each segment. This makes the image much more resistant to cropping than other algorithms, with
 	the paper claiming resistance to up to 50% cropping, while most other algorithms stop at about 5% cropping.
+
+	Note: Slightly different segmentations are produced when using pillow version 6 vs. >=7, due to a change in
+	rounding in the greyscale conversion. This leads to a slightly different result.
 	:param image: The image to hash
 	:param hash_func: The hashing function to use
 	:param limit_segments: If you have storage requirements, you can limit to hashing only the M largest segments
@@ -584,8 +607,8 @@ def crop_resistant_hash(
 	hashes = []
 	for segment in segments:
 		orig_w, orig_h = orig_image.size
-		scale_w = orig_w / segmentation_image_size
-		scale_h = orig_h / segmentation_image_size
+		scale_w = float(orig_w) / segmentation_image_size
+		scale_h = float(orig_h) / segmentation_image_size
 		min_y = min(coord[0] for coord in segment) * scale_h
 		min_x = min(coord[1] for coord in segment) * scale_w
 		max_y = (max(coord[0] for coord in segment)+1) * scale_h
