@@ -22,6 +22,7 @@ setup(
     license='BSD 2-clause (see LICENSE file)',
     description='Image Hashing library',
     long_description=long_description,
+    long_description_content_type='text/x-rst',
     install_requires=[
         "six",
         "numpy",

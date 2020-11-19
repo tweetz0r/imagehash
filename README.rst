@@ -82,10 +82,10 @@ Source: 7441 free icons on GitHub (see examples/github-urls.txt).
 
 The following pages show groups of images with the same hash (the hashing method sees them as the same).
 
-* `phash <https://johannesbuchner.github.io/imagehash/art3.html>`_ (or `with z-transform <https://johannesbuchner.github.io/imagehash/art9.html>`__)
-* `dhash <https://johannesbuchner.github.io/imagehash/art4.html>`_ (or `with z-transform <https://johannesbuchner.github.io/imagehash/art10.html>`__)
-* `colorhash <https://johannesbuchner.github.io/imagehash/art7.html>`_
-* `average_hash <https://johannesbuchner.github.io/imagehash/art2.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/art8.html>`__)
+* `phash <https://johannesbuchner.github.io/imagehash/art3.html>`__ (or `with z-transform <https://johannesbuchner.github.io/imagehash/art9.html>`__)
+* `dhash <https://johannesbuchner.github.io/imagehash/art4.html>`__ (or `with z-transform <https://johannesbuchner.github.io/imagehash/art10.html>`__)
+* `colorhash <https://johannesbuchner.github.io/imagehash/art7.html>`__
+* `average_hash <https://johannesbuchner.github.io/imagehash/art2.html>`__ (`with z-transform <https://johannesbuchner.github.io/imagehash/art8.html>`__)
 
 The hashes use hashsize=8; colorhash uses binbits=3.
 You may want to adjust the hashsize or require some manhattan distance (hash1 - hash2 < threshold).
@@ -97,10 +97,10 @@ Source: 109259 art pieces from http://parismuseescollections.paris.fr/en/recherc
 
 The following pages show groups of images with the same hash (the hashing method sees them as the same).
 
-* `phash <https://johannesbuchner.github.io/imagehash/index3.html>`_ (or `with z-transform <https://johannesbuchner.github.io/imagehash/index9.html>`__)
-* `dhash <https://johannesbuchner.github.io/imagehash/index4.html>`_ (or `with z-transform <https://johannesbuchner.github.io/imagehash/index10.html>`__)
-* `colorhash <https://johannesbuchner.github.io/imagehash/index7.html>`_
-* `average_hash <https://johannesbuchner.github.io/imagehash/index2.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/index8.html>`__)
+* `phash <https://johannesbuchner.github.io/imagehash/index3.html>`__ (or `with z-transform <https://johannesbuchner.github.io/imagehash/index9.html>`__)
+* `dhash <https://johannesbuchner.github.io/imagehash/index4.html>`__ (or `with z-transform <https://johannesbuchner.github.io/imagehash/index10.html>`__)
+* `colorhash <https://johannesbuchner.github.io/imagehash/index7.html>`__
+* `average_hash <https://johannesbuchner.github.io/imagehash/index2.html>`__ (`with z-transform <https://johannesbuchner.github.io/imagehash/index8.html>`__)
 
 For understanding hash distances, check out these excellent blog posts:
 
