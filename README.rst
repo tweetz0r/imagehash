@@ -1,3 +1,4 @@
+===========
 ImageHash
 ===========
 
@@ -8,11 +9,12 @@ An image hashing library written in Python. ImageHash supports:
 * Difference hashing (`dHash`_)
 * Wavelet hashing (`wHash`_)
 * HSV color hashing (colorhash)
+* Crop-resistant hashing (`crop_resistant_hash`_)
 
 |Travis|_ |Coveralls|_
 
 Rationale
----------
+=========
 
 Image hashes tell whether two images look nearly identical.
 This is different from cryptographic hashing algorithms (like MD5, SHA-1)
@@ -25,15 +27,16 @@ analyse the image structure on luminance (without color information).
 The color hash algorithm analyses the color distribution and 
 black & gray fractions (without position information).
 
-Requirements
--------------
+Installation
+============
+
 Based on PIL/Pillow Image, numpy and scipy.fftpack (for pHash)
 Easy installation through `pypi`_::
 
 	pip install imagehash
 
 Basic usage
-------------
+===========
 ::
 
 	>>> from PIL import Image
@@ -64,57 +67,57 @@ Source hosted at GitHub: https://github.com/JohannesBuchner/imagehash
 .. _dHash: http://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html
 .. _wHash: https://fullstackml.com/2016/07/02/wavelet-image-hash-in-python/
 .. _pypi: https://pypi.python.org/pypi/ImageHash
+.. _crop_resistant_hash: https://ieeexplore.ieee.org/document/6980335
 
-
-Example results
------------------
+Examples
+=========
 
 To help evaluate how different hashing algorithms behave, below are a few hashes applied
 to two datasets. This will let you know what images an algorithm thinks are basically identical.
+
+Example 1: Icon dataset
+-----------------------
+
+Source: 7441 free icons on GitHub (see examples/github-urls.txt).
+
+The following pages show groups of images with the same hash (the hashing method sees them as the same).
+
+* `phash <https://johannesbuchner.github.io/imagehash/art3.html>`_ (or `with z-transform <https://johannesbuchner.github.io/imagehash/art9.html>`__)
+* `dhash <https://johannesbuchner.github.io/imagehash/art4.html>`_ (or `with z-transform <https://johannesbuchner.github.io/imagehash/art10.html>`__)
+* `colorhash <https://johannesbuchner.github.io/imagehash/art7.html>`_
+* `average_hash <https://johannesbuchner.github.io/imagehash/art2.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/art8.html>`__)
+
+The hashes use hashsize=8; colorhash uses binbits=3.
+You may want to adjust the hashsize or require some manhattan distance (hash1 - hash2 < threshold).
+
+Example 2: Art dataset
+----------------------
+
+Source: 109259 art pieces from http://parismuseescollections.paris.fr/en/recherche/image-libre/.
+
+The following pages show groups of images with the same hash (the hashing method sees them as the same).
+
+* `phash <https://johannesbuchner.github.io/imagehash/index3.html>`_ (or `with z-transform <https://johannesbuchner.github.io/imagehash/index9.html>`__)
+* `dhash <https://johannesbuchner.github.io/imagehash/index4.html>`_ (or `with z-transform <https://johannesbuchner.github.io/imagehash/index10.html>`__)
+* `colorhash <https://johannesbuchner.github.io/imagehash/index7.html>`_
+* `average_hash <https://johannesbuchner.github.io/imagehash/index2.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/index8.html>`__)
+
 For understanding hash distances, check out these excellent blog posts:
 
 * https://tech.okcupid.com/evaluating-perceptual-image-hashes-okcupid/
 * https://content-blockchain.org/research/testing-different-image-hash-functions/
 
-The first dataset is a **collection of 7441 free icons on GitHub** (see examples/github-urls.txt).
-The following pages show groups of images with the same hash (the hashing method sees them as the same).
-
-* `phash hashsize=8 clusters <https://johannesbuchner.github.io/imagehash/art3.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/art9.html>`__)
-* `dhash hashsize=8 clusters <https://johannesbuchner.github.io/imagehash/art4.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/art10.html>`__)
-* `whash-haar hashsize=8 clusters <https://johannesbuchner.github.io/imagehash/art5.html>`_ (`with z-transform  <https://johannesbuchner.github.io/imagehash/art11.html>`__)
-* `whash-db4 hashsize=8 clusters <https://johannesbuchner.github.io/imagehash/art6.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/art12.html>`__)
-* `colorhash binbits=3 clusters <https://johannesbuchner.github.io/imagehash/art7.html>`_
-* `average_hash hashsize=8 clusters <https://johannesbuchner.github.io/imagehash/art2.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/art8.html>`__)
-
-The second dataset is a **collection of 109259 art pieces** from parismuseescollections.paris.fr/en/recherche/image-libre/.
-
-The following pages show groups of images with the same hash (the hashing method sees them as the same).
-
-* `phash hashsize:8 clusters <https://johannesbuchner.github.io/imagehash/index3.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/index9.html>`__)
-* `dhash hashsize:8 clusters <https://johannesbuchner.github.io/imagehash/index4.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/index10.html>`__)
-* `whash-haar hashsize:8 clusters <https://johannesbuchner.github.io/imagehash/index5.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/index11.html>`__)
-* `whash-db4 hashsize:8 clusters <https://johannesbuchner.github.io/imagehash/index6.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/index12.html>`__)
-* `colorhash binbits:3 clusters <https://johannesbuchner.github.io/imagehash/index7.html>`_
-* `average_hash hashsize:8 clusters <https://johannesbuchner.github.io/imagehash/index2.html>`_ (`with z-transform <https://johannesbuchner.github.io/imagehash/index8.html>`__)
-
-You may want to adjust the hashsize or require some manhattan distance (hash1 - hash2 < threshold).
-
-Other projects
----------------
-
-* http://blockhash.io/
-* https://github.com/acoomans/instagram-filters
-* https://pippy360.github.io/transformationInvariantImageSearch/
-
 Contributing
--------------
+=============
 
-Pull requests and new features are welcome.
+Pull requests and new features are warmly welcome.
 
 If you encounter a bug or have a question, please open a GitHub issue. You can also try Stack Overflow.
 
 Changelog
 ----------
+
+* 4.2: Cropping-Resistant image hashing added by @joshcoales
 
 * 4.1: Add examples and colorhash
 
@@ -130,6 +133,13 @@ Changelog
 * 2.0: Added whash
 
 * 1.0: Initial ahash, dhash, phash implementations.
+
+Other projects
+==============
+
+* http://blockhash.io/
+* https://github.com/acoomans/instagram-filters
+* https://pippy360.github.io/transformationInvariantImageSearch/
 
 
 .. |Travis| image:: https://travis-ci.org/JohannesBuchner/imagehash.svg?branch=master

@@ -12,7 +12,7 @@ with open('README.rst') as f:
 
 setup(
     name='ImageHash',
-    version='4.1.0',
+    version='4.2.0',
     author='Johannes Buchner',
     author_email='buchner.johannes@gmx.at',
     py_modules=['imagehash'],
