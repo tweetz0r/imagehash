@@ -4,12 +4,12 @@ ImageHash
 
 An image hashing library written in Python. ImageHash supports:
 
-* Average hashing (`aHashref`_)
-* Perceptual hashing (`pHashref`_)
-* Difference hashing (`dHashref`_)
-* Wavelet hashing (`wHashref`_)
+* Average hashing
+* Perceptual hashing
+* Difference hashing
+* Wavelet hashing
 * HSV color hashing (colorhash)
-* Crop-resistant hashing (`crop_resistant_hashref`_)
+* Crop-resistant hashing
 
 |Travis|_ |Coveralls|_
 
@@ -61,6 +61,15 @@ The demo script **find_similar_images** illustrates how to find similar
 images in a directory.
 
 Source hosted at GitHub: https://github.com/JohannesBuchner/imagehash
+
+References
+-----------
+
+* Average hashing (`aHashref`_)
+* Perceptual hashing (`pHashref`_)
+* Difference hashing (`dHashref`_)
+* Wavelet hashing (`wHashref`_)
+* Crop-resistant hashing (`crop_resistant_hashref`_)
 
 .. _aHashref: http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
 .. _pHashref: http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
@@ -145,8 +154,8 @@ Other projects
 * https://github.com/thorn-oss/perception (based on imagehash code, depends on opencv)
 * https://docs.opencv.org/3.4/d4/d93/group__img__hash.html
 
-.. |Travis| image:: https://travis-ci.org/JohannesBuchner/imagehash.svg?branch=master
-.. _Travis: https://travis-ci.org/JohannesBuchner/imagehash
+.. |Travis| image:: https://travis-ci.com/JohannesBuchner/imagehash.svg?branch=master
+.. _Travis: https://travis-ci.com/JohannesBuchner/imagehash
 
 .. |Coveralls| image:: https://coveralls.io/repos/github/JohannesBuchner/imagehash/badge.svg
 .. _Coveralls: https://coveralls.io/github/JohannesBuchner/imagehash
